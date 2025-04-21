@@ -26,7 +26,7 @@ public class Players : MonoBehaviour
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         cameraController = Camera.main.GetComponent<CameraController>();
         Camera.main.GetComponent<CameraController>().ShakeCamera();
-        Camera.main.GetComponent<CameraController>().ZoomOutTemporarily();
+     
 
     }
     

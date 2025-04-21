@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     private Vector3 shakeOffset;
 
     [Header("Zoom Settings")]
-    public float zoomOutSize = 6f;
+    public float zoomOutSize = 3f;
     public float zoomSpeed = 2f;
     private float originalSize;
     private Camera cam;
@@ -106,6 +106,22 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public void ZoomOnDeath()
+    {
+        StopAllCoroutines();
+        StartCoroutine(ZoomInOnDeathRoutine());
+    }
+
+    IEnumerator ZoomInOnDeathRoutine()
+    {
+        float targetZoom = 3.5f; // Adjust this for how close you want to zoom
+        while (Mathf.Abs(cam.orthographicSize - targetZoom) > 0.05f)
+        {
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, zoomSpeed * Time.deltaTime);
+            yield return null;
+        }
+    }
+
     private IEnumerator ZoomRoutine()
     {
         cam.orthographicSize = zoomOutSize;
@@ -118,5 +134,10 @@ public class CameraController : MonoBehaviour
         }
 
         cam.orthographicSize = originalSize;
+    }
+
+    public void ZoomDeath()
+    {
+        cam.orthographicSize = zoomOutSize;
     }
 }

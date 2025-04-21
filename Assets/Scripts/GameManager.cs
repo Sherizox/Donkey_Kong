@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
-{
+{ 
     public static GameManager Instance;
 
     public int Health;
@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public Text ScoreText;
 
     public GameObject OpenUI;
+    public GameObject BGAnim;
+    public GameObject BGNonAnim;
 
     public bool gameOver = false;
 
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        BGAnim.gameObject.SetActive(true);
+        BGNonAnim.gameObject.SetActive(false);
         Health = 3;
         score = 0;
         UpdateHealthScore();
@@ -59,7 +63,7 @@ public class GameManager : MonoBehaviour
             if (Health <= 0)
             {
                 Health = 0;
-                UpdateHealthScore();
+              
                 gameOver = true;
                 LevelFailed();
             }
@@ -74,14 +78,17 @@ public class GameManager : MonoBehaviour
 
     public void LevelComplete()
     {
+        BGAnim.gameObject.SetActive(false);
+        BGNonAnim.gameObject.SetActive(true);   
         gameOver = true;
         OpenUI.SetActive(true);
     }
 
     public void LevelFailed()
     {
+        
+        
         gameOver = true;
-        score = 0; // Reset score on fail
         UpdateHealthScore();
         OpenUI.SetActive(true);
     }
