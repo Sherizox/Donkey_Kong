@@ -2630,6 +2630,10 @@ PrefabInstance:
       value: Princess
       objectReference: {fileID: 0}
     - target: {fileID: 1019850078211712495, guid: f362c8a7a47a0514bbece4e56a1af20a, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1019850078211712495, guid: f362c8a7a47a0514bbece4e56a1af20a, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}

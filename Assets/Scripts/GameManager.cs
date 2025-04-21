@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         if (!gameOver)
         {
-            IncrementScore(1); // Use 1 per frame or use a timer if needed
+            IncrementScore(1); 
         }
     }
 

@@ -95,7 +95,8 @@ public class Players : MonoBehaviour
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Objective"))
         {
-            enabled = false;
+            enabled = true;
+            SetAnimation("idle_1", true);
             GameManager.Instance.LevelComplete();
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
@@ -106,8 +107,8 @@ public class Players : MonoBehaviour
                 SetAnimation("hit", false);
                 GameManager.Instance.DecreaseHealth(1);
 
-                // Knockback
-                rb.velocity = new Vector2(-4f * Mathf.Sign(transform.localScale.x), 2f);
+            
+                rb.linearVelocity = new Vector2(-4f * Mathf.Sign(transform.localScale.x), 2f);
 
                 Invoke(nameof(HandlePostHit), 0.5f);
             }
