@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     {
         if (!gameOver)
         {
-             IncrementScore(100);
+            IncrementScore(1); // Use 1 per frame or use a timer if needed
         }
     }
 
@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour
 
             if (Health <= 0)
             {
+                Health = 0;
+                UpdateHealthScore();
                 gameOver = true;
                 LevelFailed();
             }
@@ -79,6 +81,8 @@ public class GameManager : MonoBehaviour
     public void LevelFailed()
     {
         gameOver = true;
+        score = 0; // Reset score on fail
+        UpdateHealthScore();
         OpenUI.SetActive(true);
     }
 

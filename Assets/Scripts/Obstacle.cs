@@ -17,6 +17,11 @@ public class Obstacle : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ground")) {
             rigidbody.AddForce(collision.transform.right * speed, ForceMode2D.Impulse);
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            Destroy(this.gameObject);
+        }
     }
     private void Update()
     {
