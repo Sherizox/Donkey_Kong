@@ -41,8 +41,8 @@ public class Players : MonoBehaviour
         float moveInput = Input.GetAxis("Horizontal");
         float VerticalInput = Input.GetAxis("Vertical");
 
-        Vector2 moveVelocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
-        rb.velocity = moveVelocity;
+        Vector2 moveVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = moveVelocity;
 
         if (moveInput > 0)
         {
@@ -58,7 +58,7 @@ public class Players : MonoBehaviour
     {
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             //KnightControl.jump();
             //SetAnimation("jump", false);
         }
@@ -79,7 +79,7 @@ public class Players : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Ladder"))
         {
             isClimbing = true;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.isKinematic = true;
         }
     }
@@ -129,12 +129,12 @@ public class Players : MonoBehaviour
 
     private void UpdateAnimation()
     {
-        if (!isGrounded && rb.velocity.y > 0)
+        if (!isGrounded && rb.linearVelocity.y > 0)
         {
             SetAnimation("jump", false);
 
         }
-        else if (isGrounded && Mathf.Abs(rb.velocity.x) > 0)
+        else if (isGrounded && Mathf.Abs(rb.linearVelocity.x) > 0)
         {
        
             SetAnimation("run", true);
