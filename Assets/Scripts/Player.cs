@@ -15,13 +15,21 @@ public class Players : MonoBehaviour
     public float climbSpeed = 5f;
 
     private SkeletonAnimation skeletonAnimation;
+    private CameraController cameraController;
+
+   
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         KnightControl = GetComponent<KnightControl>();
         skeletonAnimation = GetComponent<SkeletonAnimation>();
+        cameraController = Camera.main.GetComponent<CameraController>();
+        Camera.main.GetComponent<CameraController>().ShakeCamera();
+        Camera.main.GetComponent<CameraController>().ZoomOutTemporarily();
+
     }
+    
 
     private void Update()
     {
@@ -107,7 +115,8 @@ public class Players : MonoBehaviour
                 SetAnimation("hit", false);
                 GameManager.Instance.DecreaseHealth(1);
 
-            
+                cameraController.ShakeCamera();
+
                 rb.linearVelocity = new Vector2(-4f * Mathf.Sign(transform.localScale.x), 2f);
 
                 Invoke(nameof(HandlePostHit), 0.5f);
@@ -164,6 +173,8 @@ public class Players : MonoBehaviour
 
     private void PlayDeathSequence()
     {
+        cameraController.ShakeCamera();
+
         skeletonAnimation.state.SetAnimation(0, "dead", false);
         enabled = false;
         GameManager.Instance.LevelFailed();
