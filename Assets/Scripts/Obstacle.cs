@@ -15,7 +15,7 @@ public class Obstacle : MonoBehaviour
 
         if (particle != null)
         {
-            particle.Stop();  // Optional: Stop if looping or PlayOnAwake is true
+            particle.Stop();
         }
     }
 
@@ -31,7 +31,7 @@ public class Obstacle : MonoBehaviour
         {
             if (particle != null)
             {
-                particle.transform.parent = null;  // Detach so it doesn't get destroyed
+                particle.transform.parent = null;  
                 particle.Play();
                 Destroy(particle.gameObject, particle.main.duration);
             }

@@ -117,9 +117,9 @@ public class Players : MonoBehaviour
 
                 cameraController.ShakeCamera();
 
-                rb.linearVelocity = new Vector2(-4f * Mathf.Sign(transform.localScale.x), 2f);
+                rb.linearVelocity = new Vector2(-6f * Mathf.Sign(transform.localScale.x), 2f);
 
-                Invoke(nameof(HandlePostHit), 0.5f);
+                Invoke(nameof(HandlePostHit), 0.6f);
             }
         }
 
