@@ -21,6 +21,8 @@ public class Players : MonoBehaviour
 
     private void Awake()
     {
+
+       
         rb = GetComponent<Rigidbody2D>();
         KnightControl = GetComponent<KnightControl>();
         skeletonAnimation = GetComponent<SkeletonAnimation>();
@@ -103,6 +105,7 @@ public class Players : MonoBehaviour
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Objective"))
         {
+          
             enabled = true;
             SetAnimation("idle_1", true);
             GameManager.Instance.LevelComplete();
@@ -113,18 +116,32 @@ public class Players : MonoBehaviour
             {
                 isHit = true;
                 SetAnimation("hit", false);
-                GameManager.Instance.DecreaseHealth(1);
-
+    
                 cameraController.ShakeCamera();
-
                 rb.linearVelocity = new Vector2(-6f * Mathf.Sign(transform.localScale.x), 2f);
 
-                Invoke(nameof(HandlePostHit), 0.6f);
+                GameManager.Instance.DecreaseHealth(1);
+
+                // Directly check health after applying damage
+                if (GameManager.Instance.Health <= 0)
+                {
+                    PlayDeathSequence();
+                }
+                else
+                {
+                    Invoke(nameof(ResetHit), 0.6f);
+                }
             }
+
         }
 
 
     }
+    private void ResetHit()
+    {
+        isHit = false;
+    }
+
     private void HandlePostHit()
     {
         if (GameManager.Instance.Health <= 0)
@@ -173,10 +190,20 @@ public class Players : MonoBehaviour
 
     private void PlayDeathSequence()
     {
-        cameraController.ShakeCamera();
-
-        skeletonAnimation.state.SetAnimation(0, "dead", false);
-        enabled = false;
+        isHit = true;
         GameManager.Instance.LevelFailed();
+
+        skeletonAnimation.state.ClearTracks(); // important
+        skeletonAnimation.state.SetAnimation(0, "dead", false);
+
+        rb.linearVelocity = Vector2.zero;
+        enabled = false;
+
+        cameraController.ShakeCamera();
+       // cameraController.ZoomInOnDeath(); // optional if you added zoom-in effect
     }
+
+
+   
+    
 }

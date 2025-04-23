@@ -12,8 +12,14 @@ public class GameManager : MonoBehaviour
     public Text ScoreText;
 
     public GameObject OpenUI;
+    public GameObject Win;
     public GameObject BGAnim;
     public GameObject BGNonAnim;
+
+
+    public GameObject Player;
+    public GameObject Cam1;
+    public GameObject Cam2;
 
     public bool gameOver = false;
 
@@ -29,6 +35,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        Invoke("cammove", 4.8f);
         BGAnim.gameObject.SetActive(true);
         BGNonAnim.gameObject.SetActive(false);
         Health = 3;
@@ -36,6 +43,12 @@ public class GameManager : MonoBehaviour
         UpdateHealthScore();
     }
 
+    public void cammove()
+    {
+        Cam1.SetActive(false);
+        Cam2.SetActive(true);
+        Player.SetActive(true);
+    }
     private void Update()
     {
         if (!gameOver)
@@ -81,7 +94,7 @@ public class GameManager : MonoBehaviour
         BGAnim.gameObject.SetActive(false);
         BGNonAnim.gameObject.SetActive(true);   
         gameOver = true;
-        OpenUI.SetActive(true);
+        Invoke("Close",3f);
     }
 
     public void LevelFailed()
@@ -90,7 +103,15 @@ public class GameManager : MonoBehaviour
         
         gameOver = true;
         UpdateHealthScore();
+        Invoke("open",3f);
+    }
+
+    private void open()
+    {
         OpenUI.SetActive(true);
+    }private void Close()
+    {
+        Win.SetActive(true);
     }
 
     public void LoadScene()
