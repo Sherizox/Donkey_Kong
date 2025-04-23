@@ -17,6 +17,8 @@ public class Players : MonoBehaviour
     private SkeletonAnimation skeletonAnimation;
     private CameraController cameraController;
 
+    private bool isDead = false;
+
    
 
     private void Awake()
@@ -35,14 +37,14 @@ public class Players : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.gameOver && !isHit)
-        {
-            Move();
-            Jump();
-            Climb();
-            UpdateAnimation();
-        }
+        if (isDead || GameManager.Instance.gameOver || isHit) return;
+
+        Move();
+        Jump();
+        Climb();
+        UpdateAnimation();
     }
+
 
     private void Move()
     {
@@ -191,17 +193,25 @@ public class Players : MonoBehaviour
     private void PlayDeathSequence()
     {
         isHit = true;
+        isDead = true; 
+
         GameManager.Instance.LevelFailed();
 
-        skeletonAnimation.state.ClearTracks(); // important
+        skeletonAnimation.state.ClearTracks(); 
         skeletonAnimation.state.SetAnimation(0, "dead", false);
 
         rb.linearVelocity = Vector2.zero;
-        enabled = false;
-
         cameraController.ShakeCamera();
-       // cameraController.ZoomInOnDeath(); // optional if you added zoom-in effect
+
+        // Disable the script slightly later if needed (optional)
+        Invoke(nameof(DisablePlayerScript), 0.2f);
     }
+
+    private void DisablePlayerScript()
+    {
+        enabled = false;
+    }
+
 
 
    

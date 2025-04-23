@@ -93,6 +93,8 @@ public class GameManager : MonoBehaviour
     {
         BGAnim.gameObject.SetActive(false);
         BGNonAnim.gameObject.SetActive(true);   
+        
+        FindObjectOfType<GameAudioManager>().PlayGameWinAudio();
         gameOver = true;
         Invoke("Close",3f);
     }
@@ -100,7 +102,7 @@ public class GameManager : MonoBehaviour
     public void LevelFailed()
     {
         
-        
+        FindObjectOfType<GameAudioManager>().PlayGameOverAudio();
         gameOver = true;
         UpdateHealthScore();
         Invoke("open",3f);
