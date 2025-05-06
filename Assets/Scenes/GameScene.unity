@@ -1332,8 +1332,8 @@ MonoBehaviour:
   target: {fileID: 5374018943712417810}
   offset: {x: 2.5, y: 3.5, z: -15}
   followSpeed: 1
-  shakeDuration: 1
-  shakeMagnitude: 2
+  shakeDuration: 15
+  shakeMagnitude: 3
   zoomOutSize: 6
   zoomSpeed: 2
   zoomInSize: 4.5

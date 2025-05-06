@@ -5,64 +5,48 @@ using UnityEngine;
 public class Players : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private KnightControl KnightControl;
-    private bool isGrounded;
-    private bool isClimbing;
-    private bool isHit = false;
+    private SkeletonAnimation skeletonAnimation;
+    private CameraController cameraController;
 
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
     public float climbSpeed = 5f;
 
-    private SkeletonAnimation skeletonAnimation;
-    private CameraController cameraController;
-
+    private bool isGrounded;
+    private bool isClimbing;
+    private bool isHit = false;
     private bool isDead = false;
 
-   
-
-    private void Awake()
+    void Awake()
     {
-
-       
         rb = GetComponent<Rigidbody2D>();
-        KnightControl = GetComponent<KnightControl>();
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         cameraController = Camera.main.GetComponent<CameraController>();
-        Camera.main.GetComponent<CameraController>().ShakeCamera();
-     
-
     }
-    
 
-    private void Update()
+    void Update()
     {
-        if (isDead || GameManager.Instance.gameOver || isHit) return;
-
-        Move();
-        Jump();
-        Climb();
-        UpdateAnimation();
+        if (!GameManager.Instance.gameOver && !isHit && !isDead)
+        {
+            Move();
+            Jump();
+            Climb();
+            UpdateAnimation();
+        }
     }
 
-
-    private void Move()
+    void Move()
     {
         float moveInput = Input.GetAxis("Horizontal");
-        Vector2 moveVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
-        rb.linearVelocity = moveVelocity;
+        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
         if (moveInput > 0)
-        {
             transform.eulerAngles = Vector3.zero;
-        }
         else if (moveInput < 0)
-        {
             transform.eulerAngles = new Vector3(0, 180, 0);
-        }
     }
 
-    private void Jump()
+    void Jump()
     {
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
@@ -70,16 +54,16 @@ public class Players : MonoBehaviour
         }
     }
 
-    private void Climb()
+    void Climb()
     {
         if (isClimbing)
         {
-            float verticalInput = Input.GetAxis("Vertical");
-            transform.position += new Vector3(0, verticalInput * climbSpeed * Time.deltaTime, 0);
+            float vInput = Input.GetAxis("Vertical");
+            transform.position += new Vector3(0, vInput * climbSpeed * Time.deltaTime, 0);
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Ladder"))
         {
@@ -89,7 +73,7 @@ public class Players : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Ladder"))
         {
@@ -98,76 +82,63 @@ public class Players : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D col)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        int layer = col.gameObject.layer;
+
+        if (layer == LayerMask.NameToLayer("Ground"))
         {
             isGrounded = true;
             SetAnimation("idle_1", true);
         }
-        else if (collision.gameObject.layer == LayerMask.NameToLayer("Objective"))
+        else if (layer == LayerMask.NameToLayer("Objective"))
         {
-          
-            enabled = true;
             SetAnimation("idle_1", true);
             GameManager.Instance.LevelComplete();
         }
-        else if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        else if (layer == LayerMask.NameToLayer("Obstacle") && !isHit && !isDead)
         {
-            if (!isHit)
-            {
-                isHit = true;
-                SetAnimation("hit", false);
-    
-                cameraController.ShakeCamera();
-                rb.linearVelocity = new Vector2(-6f * Mathf.Sign(transform.localScale.x), 2f);
-
-                GameManager.Instance.DecreaseHealth(1);
-
-                // Directly check health after applying damage
-                if (GameManager.Instance.Health <= 0)
-                {
-                    PlayDeathSequence();
-                }
-                else
-                {
-                    Invoke(nameof(ResetHit), 0.6f);
-                }
-            }
-
+            HandleHit();
         }
-
-
-    }
-    private void ResetHit()
-    {
-        isHit = false;
     }
 
-    private void HandlePostHit()
+    void OnCollisionExit2D(Collision2D col)
     {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            isGrounded = false;
+        }
+    }
+
+    void HandleHit()
+    {
+        isHit = true;
+        SetAnimation("hit", false);
+        cameraController.ShakeCamera();
+
+        rb.linearVelocity = new Vector2(-6f * Mathf.Sign(transform.localScale.x), 2f);
+        GameManager.Instance.DecreaseHealth(1);
+
         if (GameManager.Instance.Health <= 0)
         {
             PlayDeathSequence();
         }
         else
         {
-            isHit = false;
+            Invoke(nameof(ResetHit), 0.6f);
         }
     }
 
-
-    private void OnCollisionExit2D(Collision2D collision)
+    void ResetHit()
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            isGrounded = false;
-            skeletonAnimation.loop = false;
-        }
+        isHit = false;
     }
 
-    private void UpdateAnimation()
+    void UpdateAnimation()
     {
+      
+        if (isDead) return; 
+
         if (!isGrounded && rb.linearVelocity.y > 0)
         {
             SetAnimation("jump", false);
@@ -182,38 +153,29 @@ public class Players : MonoBehaviour
         }
     }
 
-    private void SetAnimation(string animationName, bool loop)
+    void SetAnimation(string anim, bool loop)
     {
-        if (skeletonAnimation.AnimationName != animationName)
+        if (skeletonAnimation.AnimationName != anim)
         {
-            skeletonAnimation.state.SetAnimation(0, animationName, loop);
+            skeletonAnimation.state.SetAnimation(0, anim, loop);
         }
     }
 
-    private void PlayDeathSequence()
+    void PlayDeathSequence()
     {
-        isHit = true;
+        if (isDead) return; 
         isDead = true; 
-
+        isHit = true;
         GameManager.Instance.LevelFailed();
 
-        skeletonAnimation.state.ClearTracks(); 
-        skeletonAnimation.state.SetAnimation(0, "dead", false);
-
         rb.linearVelocity = Vector2.zero;
+        rb.isKinematic = true;
+
         cameraController.ShakeCamera();
 
-        // Disable the script slightly later if needed (optional)
-        Invoke(nameof(DisablePlayerScript), 0.2f);
-    }
+        skeletonAnimation.state.ClearTracks();
+        skeletonAnimation.state.SetAnimation(0, "dead", false); // Ensure "dead" plays once
 
-    private void DisablePlayerScript()
-    {
         enabled = false;
     }
-
-
-
-   
-    
 }
